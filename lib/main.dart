@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:linkex/inicio.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 //Actualizacion 31-08-2021 Login sencillo con request http y Dashboard
 //Para iniciar sesion se introduce nombre y password del evaluado
@@ -53,8 +54,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'LinkEX',
-      //home: new LoginPage(),
-      home: new SplashPage(),
+      home: new LoginPage(),
+      //home: new SplashPage(),
       routes: <String, WidgetBuilder>{},
     );
   }
@@ -143,20 +144,27 @@ class _LoginPageState extends State<LoginPage> {
     return circularProgress();
   }
 
-  Future<List> login() async {
+  Future login() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
       //_onBackPressed2();
       logged = true;
       // msg = "Usuario o Contraseña incorrecta";
     });
-    var url = Uri.parse('https://linkex2020.000webhostapp.com/loginM.php');
+    print(pass.text);
+    print(user.text);
+    var url = Uri.parse('http://10.0.2.2:8000/api/Login');
     final response = await http.post(url, body: {
-      "username": user.text,
+      "email": user.text,
+      "password": pass.text,
     });
+    print(response.body);
 
+    var texto = '';
     // loadingScreen();
 
-    var datauser = json.decode(response.body);
+    var datauser = response.body;
+    sharedPreferences.setString("token", datauser);
 
     if (datauser.length == 0) {
       setState(() {
@@ -165,36 +173,19 @@ class _LoginPageState extends State<LoginPage> {
         // msg = "Usuario o Contraseña incorrecta";
       });
     } else {
-      var url2 = Uri.parse('https://linkex2020.000webhostapp.com/loginM2.php');
-      final response = await http.post(url2, body: {
-        "password": pass.text,
-        "hash": datauser[0]["Password"],
-      });
-      var datauser2 = json.decode(response.body);
+      Route route = MaterialPageRoute(
+          builder: (context) => Inicio(
+              //id: datauser[0]['idEvaluado'],
+              //name: datauser[0]['Nombre'],
+              //username: datauser[0]['ApPaterno'],
+              //image: datauser[0]['Email'],
+              ));
+      Navigator.push(context, route).then(onGoBack);
 
-      if (datauser == '2') {
-        setState(() {
-          _onBackPressed2();
-          logged = false;
-          // msg = "Usuario o Contraseña incorrecta";
-        });
-      } else {
-        Route route = MaterialPageRoute(
-            builder: (context) => Inicio(
-                  id: datauser[0]['idEavluado'],
-                  name: datauser[0]['Nombre'],
-                  username: datauser[0]['ApPaterno'],
-                  image: datauser[0]['Email'],
-                ));
-        Navigator.push(context, route).then(onGoBack);
-
-        setState(() {
-          username = datauser[0]['username'];
-        });
-      }
+      setState(() {});
     }
 
-    return datauser;
+    return texto;
   }
 
   @override

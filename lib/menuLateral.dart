@@ -5,6 +5,7 @@ import 'package:linkex/configuration.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:octo_image/octo_image.dart';
+import 'package:linkex/Screens/editarPerfil.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -33,7 +34,36 @@ class _MenuLateralState extends State<MenuLateral> {
     super.initState();
   }
 
-  void menu(String) async {}
+  void menu(String) async {
+    if (String == 'Salir') {
+      //Navigator.of(context).pop(true);
+      _onBackPressed();
+      //Navigator.pop(context);
+      /* Route route = MaterialPageRoute(
+          builder: (context) => Admin2(
+                username: widget.username,
+                image: widget.image,
+              ));
+      Navigator.push(context, route).then(onGoBack);*/
+    } else if (String == 'Ajustes') {
+      Route route = MaterialPageRoute(
+          builder: (context) => EditarPerfil(
+              id: widget.id,
+              name: newname,
+              username: newusername,
+              image: newimage));
+      Navigator.push(context, route);
+    }
+    /*else if (String == 'Perfil') {
+      Route route = MaterialPageRoute(
+          builder: (context) => ProfilePage(
+              id: widget.id,
+              name: newname,
+              username: newusername,
+              image: newimage));
+      Navigator.push(context, route).then(onGoBack2);
+    }*/
+  }
 
   onGoBack(dynamic value) {
     Navigator.of(context).pop(true);

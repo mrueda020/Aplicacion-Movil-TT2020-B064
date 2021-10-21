@@ -1,13 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
-
+//import 'package:linkex/Screens/tipoExamen.dart';
+import 'package:linkex/Screens/aplicarExamen.dart';
 import 'package:http/http.dart' as http;
+import 'package:linkex/Screens/historial.dart';
+import 'package:linkex/Screens/menuExamen.dart';
 
 class Dashboard extends StatefulWidget {
   final String id;
@@ -22,6 +26,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  SharedPreferences sharedPreferences;
   double xOffset = 0;
   double yOffset = 0;
   double scaleFactor = 1;
@@ -34,7 +39,9 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
   }
 
-  void _getTime() {
+  Future<void> _getTime() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+
     var now = DateTime.now();
     if (int.parse(now.hour.toString()) >= 7) {
       print("Buenos Días");
@@ -53,6 +60,12 @@ class _DashboardState extends State<Dashboard> {
         ":" +
         now.second.toString());
     print(now);
+
+    Map datamap = json.decode(sharedPreferences.getString("token"));
+    print(datamap["accessToken"]);
+    Map<String, dynamic> token = Jwt.parseJwt(datamap["accessToken"]);
+    print(token);
+    print(token['sub']['email']);
   }
 
   bool isDrawerOpen = false;
@@ -242,6 +255,21 @@ class _DashboardState extends State<Dashboard> {
                                           isDrawerOpen = true;
                                         });
                                       }),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width - 155,
+                              ),
+                              Container(
+                                alignment: Alignment.centerRight,
+                                child: RichText(
+                                  text: TextSpan(
+                                    text: "SistemaEX",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w900),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -297,6 +325,10 @@ class _DashboardState extends State<Dashboard> {
                                   scaleFactor = 1;
                                   isDrawerOpen = false;
                                 });
+
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        MenuExamenPage()));
                               },
                               child: Container(
                                   child: Padding(
@@ -351,6 +383,9 @@ class _DashboardState extends State<Dashboard> {
                                   scaleFactor = 1;
                                   isDrawerOpen = false;
                                 });
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        Historial()));
                               },
 
                               child: Container(
@@ -410,6 +445,7 @@ class _DashboardState extends State<Dashboard> {
                                     scaleFactor = 1;
                                     isDrawerOpen = false;
                                   });
+                                  _onBackPressed();
                                 },
                                 child: Container(
                                   child: Padding(
@@ -417,14 +453,14 @@ class _DashboardState extends State<Dashboard> {
                                     child: Column(
                                       children: <Widget>[
                                         Image.asset(
-                                          "assets/images/listicon.png",
+                                          "assets/images/exiticon.png",
                                           width: 64.0,
                                         ),
                                         SizedBox(
                                           height: 20.0,
                                         ),
                                         Text(
-                                          "Resultados",
+                                          "Salir",
                                           style: TextStyle(
                                             color: Colors.redAccent[700],
                                             fontWeight: FontWeight.bold,
@@ -478,7 +514,7 @@ class _DashboardState extends State<Dashboard> {
                                       height: 15.0,
                                     ),
                                     Text(
-                                      "Comentarios",
+                                      "Grupos",
                                       style: TextStyle(
                                         color: Colors.greenAccent[700],
                                         fontWeight: FontWeight.bold,
