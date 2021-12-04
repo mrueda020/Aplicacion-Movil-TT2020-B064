@@ -12,12 +12,8 @@ import 'dart:convert';
 import 'package:transparent_image/transparent_image.dart';
 
 class MenuLateral extends StatefulWidget {
-  final String id;
-  final String name;
-  final String username;
-  final String image;
-
-  MenuLateral({this.id, this.name, this.username, this.image});
+  final String idUsuario;
+  MenuLateral({this.idUsuario});
 
   @override
   _MenuLateralState createState() => _MenuLateralState();
@@ -36,22 +32,12 @@ class _MenuLateralState extends State<MenuLateral> {
 
   void menu(String) async {
     if (String == 'Salir') {
-      //Navigator.of(context).pop(true);
       _onBackPressed();
-      //Navigator.pop(context);
-      /* Route route = MaterialPageRoute(
-          builder: (context) => Admin2(
-                username: widget.username,
-                image: widget.image,
-              ));
-      Navigator.push(context, route).then(onGoBack);*/
     } else if (String == 'Ajustes') {
       Route route = MaterialPageRoute(
           builder: (context) => EditarPerfil(
-              id: widget.id,
-              name: newname,
-              username: newusername,
-              image: newimage));
+                idUsuario: widget.idUsuario,
+              ));
       Navigator.push(context, route);
     }
     /*else if (String == 'Perfil') {
@@ -159,7 +145,7 @@ class _MenuLateralState extends State<MenuLateral> {
           ],
         ),
       ),
-      padding: EdgeInsets.only(top: 40, bottom: 155, left: 10, right: 20),
+      padding: EdgeInsets.only(top: 40, bottom: 270, left: 10, right: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -183,7 +169,7 @@ class _MenuLateralState extends State<MenuLateral> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Usuario',
+                      'Usuario\nEvaluado',
                       // newname,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.openSans(
@@ -206,7 +192,7 @@ class _MenuLateralState extends State<MenuLateral> {
             children: menuOpcionesDashboard
                 .map((elemento) => Padding(
                       padding: const EdgeInsets.only(
-                          top: 10.0, bottom: 5, left: 3, right: 150),
+                          top: 5.0, bottom: 5, left: 3, right: 150),
                       child: Card(
                         color: Color(0x0000000000),
                         elevation: 14.0,

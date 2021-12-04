@@ -1,37 +1,31 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:linkex/Models/menuGrupo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:async';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
-//import 'package:linkex/Screens/tipoExamen.dart';
-import 'package:linkex/Screens/aplicarExamen.dart';
 import 'package:http/http.dart' as http;
 import 'package:linkex/Screens/historial.dart';
-import 'package:linkex/Screens/menuExamen.dart';
 
 class Dashboard extends StatefulWidget {
-  final String id;
-  final String name;
-  final String username;
-  final String image;
+  final String idUsuario;
 
-  Dashboard({this.id, this.name, this.username, this.image});
+  Dashboard({this.idUsuario});
 
   @override
   _DashboardState createState() => new _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
-  SharedPreferences sharedPreferences;
+  //SharedPreferences sharedPreferences;
   double xOffset = 0;
   double yOffset = 0;
   double scaleFactor = 1;
   String qrCode = '-1';
   String saludo = "BIENVENIDO";
+  String idUsuario = "";
 
   @override
   void initState() {
@@ -40,8 +34,8 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _getTime() async {
-    sharedPreferences = await SharedPreferences.getInstance();
-
+    //sharedPreferences = await SharedPreferences.getInstance();
+    print(widget.idUsuario);
     var now = DateTime.now();
     if (int.parse(now.hour.toString()) >= 7) {
       print("Buenos Días");
@@ -60,12 +54,6 @@ class _DashboardState extends State<Dashboard> {
         ":" +
         now.second.toString());
     print(now);
-
-    Map datamap = json.decode(sharedPreferences.getString("token"));
-    print(datamap["accessToken"]);
-    Map<String, dynamic> token = Jwt.parseJwt(datamap["accessToken"]);
-    print(token);
-    print(token['sub']['email']);
   }
 
   bool isDrawerOpen = false;
@@ -326,9 +314,13 @@ class _DashboardState extends State<Dashboard> {
                                   isDrawerOpen = false;
                                 });
 
+                                /*Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        MenuExamenPage()));*/
+
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (BuildContext context) =>
-                                        MenuExamenPage()));
+                                        Grupo(idUsuario: widget.idUsuario)));
                               },
                               child: Container(
                                   child: Padding(
@@ -336,18 +328,18 @@ class _DashboardState extends State<Dashboard> {
                                 child: Column(
                                   children: <Widget>[
                                     Image.asset(
-                                      "assets/images/pencilicon.png",
-                                      width: 64.0,
+                                      "assets/images/usersicon.png",
+                                      width: 70.0,
                                     ),
                                     SizedBox(
                                       height: 15.0,
                                     ),
                                     Text(
-                                      "Exámen",
+                                      "Grupos",
                                       style: TextStyle(
                                         color: Colors.indigoAccent[400],
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 20.0,
+                                        fontSize: 24.0,
                                         shadows: [
                                           Shadow(
                                             blurRadius: 5.0,
@@ -385,7 +377,8 @@ class _DashboardState extends State<Dashboard> {
                                 });
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (BuildContext context) =>
-                                        Historial()));
+                                        Historial(
+                                            idUsuario: widget.idUsuario)));
                               },
 
                               child: Container(
@@ -405,7 +398,7 @@ class _DashboardState extends State<Dashboard> {
                                         style: TextStyle(
                                           color: Colors.amberAccent[700],
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 20.0,
+                                          fontSize: 24.0,
                                           shadows: [
                                             Shadow(
                                               blurRadius: 5.0,
@@ -424,6 +417,10 @@ class _DashboardState extends State<Dashboard> {
                               ),
                             ),
                           ),
+                        ),
+                        SizedBox(
+                          width: 65.0,
+                          height: 65.0,
                         ),
                         SizedBox(
                           width: 160.0,
@@ -464,7 +461,7 @@ class _DashboardState extends State<Dashboard> {
                                           style: TextStyle(
                                             color: Colors.redAccent[700],
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 20.0,
+                                            fontSize: 24.0,
                                             shadows: [
                                               Shadow(
                                                 blurRadius: 5.0,
@@ -480,7 +477,7 @@ class _DashboardState extends State<Dashboard> {
                                 )),
                           ),
                         ),
-                        SizedBox(
+                        /* SizedBox(
                           width: 160.0,
                           height: 160.0,
                           child: Card(
@@ -500,6 +497,10 @@ class _DashboardState extends State<Dashboard> {
                                   scaleFactor = 1;
                                   isDrawerOpen = false;
                                 });
+
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        Grupo(idUsuario: idUsuario)));
                               },
                               child: Container(
                                   child: Padding(
@@ -533,7 +534,7 @@ class _DashboardState extends State<Dashboard> {
                               )),
                             ),
                           ),
-                        ),
+                        ),*/
                       ],
                     ),
                   ),

@@ -8,13 +8,15 @@ class MyCustomInputBox extends StatefulWidget {
   String inputHint;
   bool obscureText;
   var formKey;
+  InkWell suffixIcons;
   TextEditingController controllerInput;
   MyCustomInputBox(
       {this.label,
       this.inputHint,
       this.obscureText,
       this.controllerInput,
-      this.formKey});
+      this.formKey,
+      InkWell suffixIcons});
   @override
   _MyCustomInputBoxState createState() => new _MyCustomInputBoxState();
 }
@@ -71,6 +73,7 @@ class _MyCustomInputBoxState extends State<MyCustomInputBox> {
             ),
             controller: widget.controllerInput,
             obscureText: widget.obscureText,
+            //
             decoration: InputDecoration(
               errorStyle: TextStyle(height: 0),
               errorBorder: OutlineInputBorder(
@@ -85,6 +88,7 @@ class _MyCustomInputBoxState extends State<MyCustomInputBox> {
                 ),
               ),
               hintText: widget.inputHint,
+              suffixIcon: widget.suffixIcons,
               hintStyle: TextStyle(
                 color: Color(0xffA6B0BD),
                 fontWeight: FontWeight.bold,

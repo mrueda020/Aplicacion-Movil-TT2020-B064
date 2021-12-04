@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:octo_image/octo_image.dart';
 import 'package:linkex/Models/CustomInputBox.dart';
-//import 'package:linkex/Screens/elegirImagenPerfil.dart';
-//import 'package:prueba/pages/imagenPickPerfil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:linkex/data/constants.dart' as Constants;
 import 'package:http/http.dart' as http;
 
 import 'dart:async';
@@ -13,12 +13,8 @@ import 'dart:convert';
 import 'dart:io';
 
 class EditarPerfil extends StatefulWidget {
-  final String id;
-  final String name;
-  final String username;
-  final String image;
-
-  EditarPerfil({this.id, this.name, this.username, this.image});
+  final String idUsuario;
+  EditarPerfil({this.idUsuario});
 
   @override
   _EditarPerfilState createState() => _EditarPerfilState();
@@ -27,65 +23,126 @@ class EditarPerfil extends StatefulWidget {
 class _EditarPerfilState extends State<EditarPerfil> {
   TextEditingController oldPassCont = new TextEditingController();
   TextEditingController newPassCont = new TextEditingController();
-  TextEditingController idCont;
-  TextEditingController nameCont;
-  TextEditingController usernameCont;
+  TextEditingController emailCont = new TextEditingController();
   bool showPassword = false;
-  File _image;
-  String fileName = "no_image.png";
-  final picker = ImagePicker();
   bool picked = false;
   bool cambiarPassword = false;
   var _formKey = GlobalKey<FormState>();
+  bool _obscureText = true;
+  void _toggle() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
 
   void initState() {
     //getData();
-    idCont = new TextEditingController(text: widget.id);
-    nameCont = new TextEditingController(text: widget.name);
-    usernameCont = new TextEditingController(text: widget.username);
+    //emailCont = new TextEditingController(text: widget.username);
     picked = false;
     cambiarPassword = false;
     super.initState();
   }
 
-  void editDataSImgSPass() async {
-    Navigator.of(context).pop(true);
-  }
-
-  void editDataSImgConPass() async {
-    Navigator.of(context).pop(true);
-  }
-
-  void editDataConImgConPass() async {
-    Navigator.of(context).pop(true);
-  }
-
-  void editDataConImgSPass() async {
-    Navigator.of(context).pop(true);
-  }
-
-  Future choiceImage() async {
-    var pickedImage = await picker.getImage(source: ImageSource.gallery);
-    setState(() {
-      //_image = File(pickedImage.path);
-      if (pickedImage != null) {
-        _image = File(pickedImage.path);
-        picked = true;
-      } else {
-        picked = false;
-        print('No ha seleccionado una imágen');
-      }
-    });
-  }
-
-  Future<bool> _onBackPressed() {
+  Future<bool> _mensaje(String mensaje) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             // backgroundColor: Color(0x00ffffff),
             title: Text(
-              "La contraseña actual ingresada es incorrecta",
+              mensaje,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey[900],
+                fontSize: 24.0,
+                fontWeight: FontWeight.w600,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Colors.indigo[50],
+                    offset: Offset(5.0, 5.0),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                    Navigator.of(context).pop(true);
+
+                    // SystemNavigator.pop();
+                  },
+                  child: Text(
+                    'Continuar',
+                    style: TextStyle(
+                      color: Colors.indigoAccent,
+                      fontSize: 23.0,
+                      fontWeight: FontWeight.w800,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 5.0,
+                          color: Colors.indigo[50],
+                          offset: Offset(5.0, 5.0),
+                        ),
+                      ],
+                    ),
+                  )),
+            ],
+          );
+        });
+  }
+
+  Future<List> actualizarInformacion() async {
+    print(emailCont.text);
+    print(oldPassCont.text);
+    print(newPassCont.text);
+    var url = Uri.parse(Constants.url.toString() +
+        'actualizar-info/' +
+        widget.idUsuario.toString());
+    final response = await http.post(url, body: {
+      "email": emailCont.text,
+      "password": newPassCont.text,
+      "confirmPassword": oldPassCont.text,
+      "name": "",
+      "surname": "",
+    });
+    var dataresultados = json.decode(response.body.toString());
+    print(response.body);
+    if (response.body[2] == "e")
+      _mensajeError(dataresultados["error"].toString());
+    else
+      _mensaje(dataresultados["message"].toString());
+  }
+
+  Future<List> actualizarInformacionEmail() async {
+    print(emailCont.text);
+    var url = Uri.parse(Constants.url.toString() +
+        'actualizar-info/' +
+        widget.idUsuario.toString());
+    final response = await http.post(url, body: {
+      "email": emailCont.text,
+      "password": "",
+      "confirmPassword": "",
+      "name": "",
+      "surname": "",
+    });
+    var dataresultados = json.decode(response.body.toString());
+    print(response.body);
+    if (response.body[2] == "e")
+      _mensajeError(dataresultados["error"].toString());
+    else
+      _mensaje(dataresultados["message"].toString());
+  }
+
+  Future<bool> _mensajeError(String mensaje) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // backgroundColor: Color(0x00ffffff),
+            title: Text(
+              mensaje,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.grey[900],
@@ -125,30 +182,6 @@ class _EditarPerfilState extends State<EditarPerfil> {
         });
   }
 
-  Future<List> verificarPass() async {}
-
-  Future uploadImage() async {
-    /*
-
-    //editData();
-    setStateIfMounted(f) {
-      if (mounted) setState(f);
-    }*/
-
-    //setState(() {});
-  }
-
-  Future uploadImage2() async {
-    /*
-
-    //editData();
-    setStateIfMounted(f) {
-      if (mounted) setState(f);
-    }*/
-
-    //setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -164,6 +197,27 @@ class _EditarPerfilState extends State<EditarPerfil> {
             Navigator.of(context).pop(true);
           },
         ),
+        actions: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 5,
+              ),
+              GestureDetector(
+                child: Text(
+                  "SistemaEX  ",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900),
+                ),
+                onTap: () {},
+              )
+            ],
+          ),
+        ],
         /*actions: [
           IconButton(
             icon: Icon(
@@ -191,59 +245,6 @@ class _EditarPerfilState extends State<EditarPerfil> {
               SizedBox(
                 height: 5,
               ),
-              Center(
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 130,
-                      height: 130,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            width: 4,
-                            color: Theme.of(context).scaffoldBackgroundColor),
-                        boxShadow: [
-                          BoxShadow(
-                              spreadRadius: 2,
-                              blurRadius: 10,
-                              color: Colors.black.withOpacity(0.1),
-                              offset: Offset(0, 10))
-                        ],
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: _image == null
-                                ? NetworkImage(
-                                    'https://linkex2020.000webhostapp.com/no_image.png')
-                                : FileImage(_image)),
-                      ),
-                    ),
-                    Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              width: 1,
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                            ),
-                            color: Colors.blueAccent,
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              choiceImage();
-                            },
-                          ),
-                        )),
-                  ],
-                ),
-              ),
               cambiarPassword
                   ? Form(
                       key: _formKey,
@@ -252,9 +253,9 @@ class _EditarPerfilState extends State<EditarPerfil> {
                           height: 20,
                         ),
                         MyCustomInputBox(
-                          controllerInput: usernameCont,
-                          label: 'Usuario',
-                          inputHint: 'Ingresa el nombre de usuario',
+                          controllerInput: emailCont,
+                          label: 'Correo',
+                          inputHint: 'Ingresa el correo',
                           obscureText: false,
                         ),
                         _buildPassSwitch(context),
@@ -263,15 +264,25 @@ class _EditarPerfilState extends State<EditarPerfil> {
                         ),
                         MyCustomInputBox(
                           controllerInput: oldPassCont,
-                          label: 'Contraseña Actual',
-                          inputHint: 'Ingresa la contraseña actual',
+                          label: 'Nueva Contraseña',
+                          inputHint: 'Ingresa una nueva contraseña',
                           obscureText: true,
                         ),
                         MyCustomInputBox(
                           controllerInput: newPassCont,
-                          label: 'Nueva Contraseña',
-                          inputHint: 'Ingresa una nueva contraseña',
+                          label: 'Confirmar Contraseña',
+                          inputHint: 'Ingresa la nueva contraseña',
                           obscureText: true,
+                          suffixIcons: InkWell(
+                            onTap: _toggle,
+                            child: Icon(
+                              _obscureText
+                                  ? FontAwesomeIcons.eye
+                                  : FontAwesomeIcons.eyeSlash,
+                              size: 15.0,
+                              color: Colors.black,
+                            ),
+                          ),
                         ),
                         Container(
                           width: double.infinity,
@@ -293,7 +304,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
                           child: FlatButton(
                             onPressed: () {
                               if (_formKey.currentState.validate()) {
-                                verificarPass();
+                                actualizarInformacion();
                               }
                             },
                             padding: EdgeInsets.symmetric(vertical: 15),
@@ -317,9 +328,9 @@ class _EditarPerfilState extends State<EditarPerfil> {
                           height: 20,
                         ),
                         MyCustomInputBox(
-                          controllerInput: usernameCont,
-                          label: 'Usuario',
-                          inputHint: 'Ingresa el nombre de usuario',
+                          controllerInput: emailCont,
+                          label: 'Correo',
+                          inputHint: 'Ingresa el correo',
                           obscureText: false,
                         ),
                         _buildPassSwitch(context),
@@ -342,7 +353,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
                               ]),
                           child: FlatButton(
                             onPressed: () {
-                              picked ? uploadImage() : editDataSImgSPass();
+                              actualizarInformacionEmail();
                             },
                             padding: EdgeInsets.symmetric(vertical: 15),
                             child: Text(

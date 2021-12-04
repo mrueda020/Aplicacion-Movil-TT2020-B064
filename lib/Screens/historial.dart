@@ -1,14 +1,15 @@
+import 'package:linkex/data/constants.dart' as Constants;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkex/Models/CircleIndicator.dart';
 import 'package:linkex/Models/ContainerEvaluacion.dart';
+import 'dart:async';
+import 'dart:convert';
 
 class Historial extends StatefulWidget {
-  final List list;
-  final int index;
-
-  Historial({this.list, this.index});
+  String idUsuario;
+  Historial({this.idUsuario});
 
   @override
   _HistorialState createState() => new _HistorialState();
@@ -21,9 +22,36 @@ class _HistorialState extends State<Historial> {
   TextEditingController stockCont;
   TextEditingController catCont;
   var _formKey = GlobalKey<FormState>();
+  var listaResultados = List();
+  List items = List();
 
   @override
-  void initState() {}
+  void initState() {
+    inicio();
+  }
+
+  Future<List> getData() async {
+    var url = Uri.parse(
+        Constants.url.toString() + 'resultados/' + widget.idUsuario.toString());
+    final response = await http.get(url);
+    var dataresultados = json.decode(response.body.toString());
+    return dataresultados;
+  }
+
+  void reset() {
+    setState(() {});
+  }
+
+  void inicio() async {
+    reset();
+    Future<List> _futureOfList = getData();
+    items = await _futureOfList;
+    listaResultados.clear();
+    listaResultados.addAll(items);
+    print(listaResultados.length);
+    print(listaResultados);
+    reset();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,37 +149,75 @@ class _HistorialState extends State<Historial> {
                 Container(
                   margin: EdgeInsets.only(left: 36),
                 ),
-                Form(
+                Stack(
+                  children: <Widget>[
+                    SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            // height: 520,
+                            width: double.infinity,
+                            margin: EdgeInsets.only(
+                                bottom: 0, top: 8, left: 5, right: 5),
+                            // height: 520,
+                            height: scrHeight / 1.2,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              //itemCount: items == null ? 0 : items.length,
+                              itemCount: listaResultados.length,
+                              itemBuilder: (context, i) {
+                                return new Container(
+                                  padding: const EdgeInsets.only(
+                                      top: 0.0, bottom: 0, left: 7, right: 7),
+                                  child: ContainerEvaluacion(
+                                    materia: listaResultados[i]["Exa_nombre"],
+                                    grupo: listaResultados[i]["Gr_nombre"],
+                                    fecha: listaResultados[i]
+                                        ["Resultados_fecha_de_realizacion"],
+                                    calificacion: listaResultados[i]
+                                        ["Resultados_calificacion"],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                /*Form(
                   child: Column(
                     children: <Widget>[
                       ContainerEvaluacion(
                         materia: "Lenguajes de Programacion",
-                        fecha: "01-10-21",
+                        fecha: "2021-01-21 04:33:20",
                         calificacion: 50,
                       ),
                       ContainerEvaluacion(
                         materia: "Estructura de Datos",
-                        fecha: "21-09-21",
+                        fecha: "2021-09-05 05:19:11",
                         calificacion: 85,
                       ),
                       ContainerEvaluacion(
                         materia: "Base de Datos",
-                        fecha: "07-09-21",
+                        fecha: "2021-09-05 03:10:00",
                         calificacion: 100,
                       ),
                       ContainerEvaluacion(
                         materia: "Teoria Computacional",
-                        fecha: "12-08-21",
+                        fecha: "2021-08-12 03:20:00",
                         calificacion: 0,
                       ),
                       ContainerEvaluacion(
                         materia: "Analisis de Algoritmos",
-                        fecha: "01-01-21",
+                        fecha: "2021-01-01 05:30:30",
                         calificacion: 32,
                       ),
                     ],
                   ),
-                ),
+                ),*/
               ],
             ),
           ],

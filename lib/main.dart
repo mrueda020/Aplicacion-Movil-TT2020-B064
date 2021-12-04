@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:linkex/inicio.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:linkex/data/constants.dart' as Constants;
 
 //Actualizacion 31-08-2021 Login sencillo con request http y Dashboard
 //Para iniciar sesion se introduce nombre y password del evaluado
@@ -48,12 +50,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-    /*SystemChrome.setEnabledSystemUIOverlays(
-      [SystemUiOverlay.top],
-    );*/
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'LinkEX',
+      // home: new Inicio(),
       home: new LoginPage(),
       //home: new SplashPage(),
       routes: <String, WidgetBuilder>{},
@@ -69,6 +70,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController user = new TextEditingController();
   TextEditingController pass = new TextEditingController();
+  SharedPreferences sharedPreferences;
+  String idUsuario = "";
 
   String msg = '';
   bool logged = false;
@@ -144,16 +147,25 @@ class _LoginPageState extends State<LoginPage> {
     return circularProgress();
   }
 
+  extractToken() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+    Map datamap = json.decode(sharedPreferences.getString("token"));
+    print(datamap["accessToken"]);
+    Map<String, dynamic> token = Jwt.parseJwt(datamap["accessToken"]);
+    print(token);
+    print(token['sub']['email']);
+    print(token['sub']['id']);
+    idUsuario = token['sub']['id'].toString();
+  }
+
   Future login() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
-      //_onBackPressed2();
       logged = true;
-      // msg = "Usuario o Contraseña incorrecta";
     });
     print(pass.text);
     print(user.text);
-    var url = Uri.parse('http://10.0.2.2:8000/api/Login');
+    var url = Uri.parse(Constants.url.toString() + 'Login');
     final response = await http.post(url, body: {
       "email": user.text,
       "password": pass.text,
@@ -161,30 +173,21 @@ class _LoginPageState extends State<LoginPage> {
     print(response.body);
 
     var texto = '';
-    // loadingScreen();
 
-    var datauser = response.body;
-    sharedPreferences.setString("token", datauser);
-
-    if (datauser.length == 0) {
+    if (response.statusCode != 200) {
       setState(() {
         _onBackPressed2();
         logged = false;
-        // msg = "Usuario o Contraseña incorrecta";
       });
     } else {
-      Route route = MaterialPageRoute(
-          builder: (context) => Inicio(
-              //id: datauser[0]['idEvaluado'],
-              //name: datauser[0]['Nombre'],
-              //username: datauser[0]['ApPaterno'],
-              //image: datauser[0]['Email'],
-              ));
+      var datauser = response.body;
+      sharedPreferences.setString("token", datauser);
+      extractToken();
+      Route route =
+          MaterialPageRoute(builder: (context) => Inicio(idUsuario: idUsuario));
       Navigator.push(context, route).then(onGoBack);
-
       setState(() {});
     }
-
     return texto;
   }
 

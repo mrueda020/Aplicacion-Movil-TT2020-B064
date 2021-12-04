@@ -60,7 +60,7 @@ class _ProgressCircleIndicatorState extends State<ProgressCircleIndicator>
         height: widget.radius * 2,
         child: Center(
           child: Text(
-            '${(widget.completedPercentage * _animation.value).round()}',
+            '${(widget.completedPercentage * _animation.value).round()}' + '%',
             style: TextStyle(
                 fontWeight: FontWeight.bold, fontSize: widget.fontSize),
           ),

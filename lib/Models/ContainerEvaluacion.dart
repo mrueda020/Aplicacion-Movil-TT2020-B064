@@ -7,8 +7,10 @@ import 'package:linkex/Models/CircleIndicator.dart';
 class ContainerEvaluacion extends StatefulWidget {
   String materia;
   String fecha;
+  String grupo;
   int calificacion;
-  ContainerEvaluacion({this.materia, this.fecha, this.calificacion});
+  ContainerEvaluacion(
+      {this.materia, this.fecha, this.calificacion, this.grupo});
   @override
   _ContainerEvaluacionState createState() => new _ContainerEvaluacionState();
 }
@@ -58,10 +60,11 @@ class _ContainerEvaluacionState extends State<ContainerEvaluacion> {
                           ),
                         ),
                         Text(
-                          'Fecha: ' + widget.fecha,
+                          'Grupo: ' + widget.grupo,
                           style: TextStyle(
                             fontSize: 16.0,
                             color: Colors.black,
+                            fontWeight: FontWeight.bold,
                             shadows: [
                               Shadow(
                                 blurRadius: 5.0,
@@ -70,14 +73,29 @@ class _ContainerEvaluacionState extends State<ContainerEvaluacion> {
                               ),
                             ],
                           ),
-                        )
+                        ),
+                        Text(
+                          'Fecha: ' + widget.fecha,
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 5.0,
+                                color: Colors.indigo[50],
+                                offset: Offset(5.0, 5.0),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   ProgressCircleIndicator(
                     completedPercentage: widget.calificacion,
                     radius: 35,
-                    fontSize: 30,
+                    fontSize: 28,
                   ),
                   Column(
                       mainAxisAlignment: MainAxisAlignment.center,

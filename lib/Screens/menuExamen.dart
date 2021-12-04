@@ -1,5 +1,9 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:linkex/Models/category.dart';
+import 'package:linkex/Models/category_detail_widget.dart';
+import 'package:linkex/Models/category_page.dart';
+import 'package:linkex/data/categories.dart';
 
 class MenuExamenPage extends StatefulWidget {
   @override
@@ -95,7 +99,7 @@ class _MenuExamenPageState extends State<MenuExamenPage> {
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Container(
-                child: ListView(
+                /*child: ListView(
                   children: [
                     buildTitleRow("Proximos Examenes ", 3),
                     SizedBox(
@@ -127,6 +131,47 @@ class _MenuExamenPageState extends State<MenuExamenPage> {
                         ],
                       ),
                     )
+                  ],
+                ),*/
+                child: ListView(
+                  physics: BouncingScrollPhysics(),
+                  //scrollDirection: Axis.horizontal,
+                  children: [
+                    SizedBox(
+                      height: 20,
+                    ),
+                    buildTitleRow("Proximos Examenes ", 3),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    buildClassItem("07:00 am", "10-Octubre-2021",
+                        "Lenguajes de Programacion", Colors.grey[50]),
+                    buildClassItem("02:00 pm", "25-Octubre-2021",
+                        "Base de Datos", Colors.lightGreenAccent[100]),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    buildTitleRow("Examenes Prueba ", 4),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: categories
+                            .map((category) => CategoryDetailWidget(
+                                  category: category,
+                                  onSelectedCategory: (category) {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          CategoryPage(category: category),
+                                    ));
+                                  },
+                                ))
+                            .toList(),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -295,3 +340,4 @@ class _MenuExamenPageState extends State<MenuExamenPage> {
     );
   }
 }
+*/
