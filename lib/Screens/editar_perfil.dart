@@ -301,6 +301,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
                           child: FlatButton(
                             onPressed: () {
                               if (_formKey.currentState.validate()) {
+                                FocusManager.instance.primaryFocus?.unfocus();
                                 actualizarInformacion();
                               }
                             },
@@ -350,6 +351,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
                               ]),
                           child: FlatButton(
                             onPressed: () {
+                              FocusManager.instance.primaryFocus?.unfocus();
                               actualizarInformacionEmail();
                             },
                             padding: EdgeInsets.symmetric(vertical: 15),

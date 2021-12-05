@@ -23,14 +23,14 @@ class _ContainerEvaluacionState extends State<ContainerEvaluacion> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: Container(
-              height: 90,
+              height: 120,
               color: Colors.white,
               child: Row(
                 children: <Widget>[
                   Container(
                     color: Colors.blueAccent,
                     width: 50,
-                    height: 90,
+                    height: 120,
                   ),
                   // ),
                   SizedBox(width: 10),
@@ -40,13 +40,40 @@ class _ContainerEvaluacionState extends State<ContainerEvaluacion> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(
-                          widget.materia,
-                          style: GoogleFonts.ubuntu(
-                            textStyle: TextStyle(
-                              fontSize: 18.0,
+                        SizedBox(
+                          width: 150,
+                          child: Text(
+                            widget.materia,
+                            maxLines: 4,
+                            overflow: TextOverflow.visible,
+                            textAlign: TextAlign.start,
+                            style: GoogleFonts.ubuntu(
+                              textStyle: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.indigoAccent[400],
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 5.0,
+                                    color: Colors.indigo[50],
+                                    offset: Offset(5.0, 5.0),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 150,
+                          child: Text(
+                            'Grupo: ' + widget.grupo,
+                            maxLines: 4,
+                            overflow: TextOverflow.visible,
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.black,
                               fontWeight: FontWeight.bold,
-                              color: Colors.indigoAccent[400],
                               shadows: [
                                 Shadow(
                                   blurRadius: 5.0,
@@ -55,21 +82,6 @@ class _ContainerEvaluacionState extends State<ContainerEvaluacion> {
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                        Text(
-                          'Grupo: ' + widget.grupo,
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            shadows: [
-                              Shadow(
-                                blurRadius: 5.0,
-                                color: Colors.indigo[50],
-                                offset: Offset(5.0, 5.0),
-                              ),
-                            ],
                           ),
                         ),
                         Text(
@@ -106,7 +118,7 @@ class _ContainerEvaluacionState extends State<ContainerEvaluacion> {
             ),
           ),
         ),
-        SizedBox(height: 12),
+        SizedBox(height: 5),
       ],
     );
   }

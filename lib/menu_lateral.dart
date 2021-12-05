@@ -147,7 +147,8 @@ class _MenuLateralState extends State<MenuLateral> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.nombreUsuario,
+                      //widget.nombreUsuario,
+                      "Usuario\nEvaluado",
                       // newname,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.openSans(

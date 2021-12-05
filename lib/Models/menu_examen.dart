@@ -644,7 +644,7 @@ class _MenuExamenesPageState extends State<MenuExamenesPage> {
     return Container(
       margin: EdgeInsets.only(bottom: 15),
       padding: EdgeInsets.all(10),
-      height: 100,
+      height: 140,
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(30),
@@ -669,7 +669,9 @@ class _MenuExamenesPageState extends State<MenuExamenesPage> {
                 width: MediaQuery.of(context).size.width - 160,
                 child: Text(
                   "$tituloExamen",
-                  overflow: TextOverflow.ellipsis,
+                  maxLines: 4,
+                  overflow: TextOverflow.visible,
+                  textAlign: TextAlign.justify,
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 17,
@@ -702,13 +704,19 @@ class _MenuExamenesPageState extends State<MenuExamenesPage> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "Descripción: " + "$descripcion",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        fontSize: 14),
-                  ),
+                  SizedBox(
+                    width: 150,
+                    child: Text(
+                      "Descripción: " + "$descripcion",
+                      maxLines: 4,
+                      overflow: TextOverflow.visible,
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: 14),
+                    ),
+                  )
                 ],
               ),
             ],

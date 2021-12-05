@@ -20,7 +20,7 @@ class OptionsWidget extends StatelessWidget {
           pregunta.opciones
               .map((option) => buildOption(context, option))
               .toList(),
-          height: 8,
+          height: 2.5,
         ),
       );
 
@@ -50,7 +50,7 @@ class OptionsWidget extends StatelessWidget {
 
   Widget buildAnswer(Respuesta option) => Container(
         margin: EdgeInsets.only(top: 0, left: 15),
-        height: 50,
+        height: 55,
         child: Row(children: [
           Icon(
             Icons.circle,
@@ -59,21 +59,27 @@ class OptionsWidget extends StatelessWidget {
           SizedBox(
             width: 15.0,
           ),
-          Text(
-            option.texto,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.normal,
-              fontSize: 20.0,
-              shadows: [
-                Shadow(
-                  blurRadius: 2.0,
-                  color: Colors.black12,
-                  offset: Offset(2.0, 2.0),
-                ),
-              ],
+          SizedBox(
+            width: 150,
+            child: Text(
+              option.texto,
+              maxLines: 2,
+              overflow: TextOverflow.visible,
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.normal,
+                fontSize: 19.0,
+                shadows: [
+                  Shadow(
+                    blurRadius: 2.0,
+                    color: Colors.black12,
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
             ),
-          )
+          ),
         ]),
       );
 

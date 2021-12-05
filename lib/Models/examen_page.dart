@@ -171,7 +171,19 @@ class _ExamenPageState extends State<ExamenPage> {
           )));
 
   Widget buildAppBar(context) => AppBar(
-        title: Text(widget.examen.titulo),
+        title: SizedBox(
+          width: 150,
+          child: Text(
+            widget.examen.titulo,
+            maxLines: 4,
+            overflow: TextOverflow.visible,
+            textAlign: TextAlign.start,
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.5,
+                fontWeight: FontWeight.w900),
+          ),
+        ),
         leading: GestureDetector(
           onTap: () {},
           child: Icon(Icons.schedule_send),
