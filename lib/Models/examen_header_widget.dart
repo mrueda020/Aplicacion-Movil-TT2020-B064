@@ -1,20 +1,19 @@
+import 'examen.dart';
+import 'examen_page.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'category.dart';
-import 'category_page.dart';
 
-class CategoryHeaderWidget extends StatelessWidget {
-  final Category category;
+class ExamenHeaderWidget extends StatelessWidget {
+  final Examen examen;
 
-  const CategoryHeaderWidget({
+  const ExamenHeaderWidget({
     Key key,
-    @required this.category,
+    @required this.examen,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => GestureDetector(
         onTap: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => CategoryPage(category: category),
+          builder: (context) => ExamenPage(examen: examen),
         )),
         child: Container(
           padding: EdgeInsets.all(12),
@@ -27,7 +26,7 @@ class CategoryHeaderWidget extends StatelessWidget {
             children: [
               const SizedBox(height: 12),
               Text(
-                category.categoryName,
+                examen.titulo,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

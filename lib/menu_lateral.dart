@@ -1,19 +1,13 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:linkex/configuration.dart';
-import 'package:http/http.dart' as http;
-import 'package:google_fonts/google_fonts.dart';
-import 'package:octo_image/octo_image.dart';
-import 'package:linkex/Screens/editarPerfil.dart';
 import 'dart:async';
-import 'dart:convert';
-
-import 'package:transparent_image/transparent_image.dart';
+import 'package:flutter/material.dart';
+import 'package:linkex/configuration.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'Screens/editar_perfil.dart';
 
 class MenuLateral extends StatefulWidget {
   final String idUsuario;
-  MenuLateral({this.idUsuario});
+  final String nombreUsuario;
+  MenuLateral({this.idUsuario, this.nombreUsuario});
 
   @override
   _MenuLateralState createState() => _MenuLateralState();
@@ -40,15 +34,6 @@ class _MenuLateralState extends State<MenuLateral> {
               ));
       Navigator.push(context, route);
     }
-    /*else if (String == 'Perfil') {
-      Route route = MaterialPageRoute(
-          builder: (context) => ProfilePage(
-              id: widget.id,
-              name: newname,
-              username: newusername,
-              image: newimage));
-      Navigator.push(context, route).then(onGoBack2);
-    }*/
   }
 
   onGoBack(dynamic value) {
@@ -133,15 +118,8 @@ class _MenuLateralState extends State<MenuLateral> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            //Color(0xff008FFF),
-            //Color(0xFF2B5CFF),
-            //Color(0xFF2456FD),
             Colors.indigoAccent[700],
-            //Color(0xFF2B5CFF),
-            //Colors.indigoAccent[400],
             Colors.lightBlueAccent[100],
-
-            //Color(0xFF11249F),
           ],
         ),
       ),
@@ -169,7 +147,7 @@ class _MenuLateralState extends State<MenuLateral> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Usuario\nEvaluado',
+                      widget.nombreUsuario,
                       // newname,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.openSans(

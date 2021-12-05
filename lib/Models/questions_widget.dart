@@ -1,19 +1,18 @@
-import 'package:flutter/material.dart';
-import 'category.dart';
-import 'option.dart';
-import 'question.dart';
-import 'category_page.dart';
+import 'respuesta.dart';
+import 'pregunta.dart';
+import 'examen.dart';
 import 'options_widget.dart';
+import 'package:flutter/material.dart';
 
 class QuestionsWidget extends StatelessWidget {
-  final Category category;
+  final Examen examen;
   final PageController controller;
   final ValueChanged<int> onChangedPage;
-  final ValueChanged<Option> onClickedOption;
+  final ValueChanged<Respuesta> onClickedOption;
 
   const QuestionsWidget({
     Key key,
-    @required this.category,
+    @required this.examen,
     @required this.controller,
     @required this.onChangedPage,
     @required this.onClickedOption,
@@ -23,17 +22,17 @@ class QuestionsWidget extends StatelessWidget {
   Widget build(BuildContext context) => PageView.builder(
         onPageChanged: onChangedPage,
         controller: controller,
-        itemCount: category.questions.length,
+        itemCount: examen.preguntas_Examen.length,
         itemBuilder: (context, index) {
-          final question = category.questions[index];
+          final pregunta = examen.preguntas_Examen[index];
           //print(question);
 
-          return buildQuestion(question: question);
+          return buildQuestion(pregunta: pregunta);
         },
       );
 
   Widget buildQuestion({
-    @required Question question,
+    @required Pregunta pregunta,
   }) =>
       Container(
         padding: const EdgeInsets.all(16),
@@ -42,7 +41,7 @@ class QuestionsWidget extends StatelessWidget {
           children: [
             const SizedBox(height: 10),
             Text(
-              question.text,
+              pregunta.texto,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
             SizedBox(height: 8),
@@ -53,7 +52,7 @@ class QuestionsWidget extends StatelessWidget {
             SizedBox(height: 18),
             Expanded(
               child: OptionsWidget(
-                question: question,
+                pregunta: pregunta,
                 onClickedOption: onClickedOption,
               ),
             ),

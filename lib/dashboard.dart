@@ -1,13 +1,9 @@
 import 'dart:async';
-import 'package:jwt_decode/jwt_decode.dart';
-import 'package:linkex/Models/menuGrupo.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
 import 'package:linkex/Screens/historial.dart';
+import 'package:linkex/Models/menu_grupo.dart';
+import 'package:linkex/data/constants.dart' as Constants;
 
 class Dashboard extends StatefulWidget {
   final String idUsuario;
@@ -34,6 +30,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _getTime() async {
+    print(Constants.aToken);
     //sharedPreferences = await SharedPreferences.getInstance();
     print(widget.idUsuario);
     var now = DateTime.now();

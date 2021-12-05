@@ -7,11 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:linkex/data/constants.dart' as Constants;
 
-//Actualizacion 31-08-2021 Login sencillo con request http y Dashboard
-//Para iniciar sesion se introduce nombre y password del evaluado
-
-//Proximo Update, Login con api Laravel
-
 void main() => runApp(MyApp());
 
 String username = '';
@@ -72,6 +67,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController pass = new TextEditingController();
   SharedPreferences sharedPreferences;
   String idUsuario = "";
+  String nombreUsuario = "";
 
   String msg = '';
   bool logged = false;
@@ -151,11 +147,16 @@ class _LoginPageState extends State<LoginPage> {
     sharedPreferences = await SharedPreferences.getInstance();
     Map datamap = json.decode(sharedPreferences.getString("token"));
     print(datamap["accessToken"]);
+    Constants.aToken = datamap["accessToken"];
     Map<String, dynamic> token = Jwt.parseJwt(datamap["accessToken"]);
+
     print(token);
     print(token['sub']['email']);
     print(token['sub']['id']);
     idUsuario = token['sub']['id'].toString();
+    nombreUsuario = token['sub']['nombre'].toString() +
+        " " +
+        token['sub']['apellido'].toString();
   }
 
   Future login() async {
@@ -165,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
     });
     print(pass.text);
     print(user.text);
-    var url = Uri.parse(Constants.url.toString() + 'Login');
+    var url = Uri.parse(Constants.url.toString() + 'login');
     final response = await http.post(url, body: {
       "email": user.text,
       "password": pass.text,
@@ -183,8 +184,9 @@ class _LoginPageState extends State<LoginPage> {
       var datauser = response.body;
       sharedPreferences.setString("token", datauser);
       extractToken();
-      Route route =
-          MaterialPageRoute(builder: (context) => Inicio(idUsuario: idUsuario));
+      Route route = MaterialPageRoute(
+          builder: (context) =>
+              Inicio(idUsuario: idUsuario, nombreUsuario: nombreUsuario));
       Navigator.push(context, route).then(onGoBack);
       setState(() {});
     }

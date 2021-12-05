@@ -1,11 +1,12 @@
-import 'package:linkex/data/constants.dart' as Constants;
+import 'dart:io';
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
-import 'package:linkex/Models/CircleIndicator.dart';
 import 'package:linkex/Models/ContainerEvaluacion.dart';
-import 'dart:async';
-import 'dart:convert';
+import 'package:linkex/data/constants.dart' as Constants;
 
 class Historial extends StatefulWidget {
   String idUsuario;
@@ -31,9 +32,16 @@ class _HistorialState extends State<Historial> {
   }
 
   Future<List> getData() async {
+    print(Constants.aToken);
     var url = Uri.parse(
         Constants.url.toString() + 'resultados/' + widget.idUsuario.toString());
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        HttpHeaders.authorizationHeader: Constants.aToken,
+      },
+    );
     var dataresultados = json.decode(response.body.toString());
     return dataresultados;
   }
@@ -187,37 +195,6 @@ class _HistorialState extends State<Historial> {
                     ),
                   ],
                 ),
-                /*Form(
-                  child: Column(
-                    children: <Widget>[
-                      ContainerEvaluacion(
-                        materia: "Lenguajes de Programacion",
-                        fecha: "2021-01-21 04:33:20",
-                        calificacion: 50,
-                      ),
-                      ContainerEvaluacion(
-                        materia: "Estructura de Datos",
-                        fecha: "2021-09-05 05:19:11",
-                        calificacion: 85,
-                      ),
-                      ContainerEvaluacion(
-                        materia: "Base de Datos",
-                        fecha: "2021-09-05 03:10:00",
-                        calificacion: 100,
-                      ),
-                      ContainerEvaluacion(
-                        materia: "Teoria Computacional",
-                        fecha: "2021-08-12 03:20:00",
-                        calificacion: 0,
-                      ),
-                      ContainerEvaluacion(
-                        materia: "Analisis de Algoritmos",
-                        fecha: "2021-01-01 05:30:30",
-                        calificacion: 32,
-                      ),
-                    ],
-                  ),
-                ),*/
               ],
             ),
           ],
@@ -254,9 +231,6 @@ class InnerClippedPart extends CustomClipper<Path> {
     path.lineTo(size.width, size.height * 0.1);
     path.quadraticBezierTo(
         size.width * 0.8, size.height * 0.11, size.width * 0.7, 0);
-    /*path.cubicTo(size.width * 0.55, size.height * 0.16, size.width * 0.85,
-        size.height * 0.05, size.width / 2, 0);
-    */
     return path;
   }
 

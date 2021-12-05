@@ -1,12 +1,14 @@
-import 'package:jwt_decode/jwt_decode.dart';
-import 'package:linkex/Models/menuExamenEX.dart';
-import 'package:linkex/data/constants.dart' as Constants;
+import 'dart:io';
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:linkex/Models/menu_Examen.dart';
+
+import 'package:linkex/data/constants.dart' as Constants;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:async';
-import 'dart:convert';
 
 class Grupo extends StatefulWidget {
   String idUsuario;
@@ -27,16 +29,16 @@ class _GrupoState extends State<Grupo> {
     var url = Uri.parse(Constants.url.toString() +
         'cargar-grupos/' +
         widget.idUsuario.toString());
-    final response = await http.get(url);
-    //print(response.body);
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        HttpHeaders.authorizationHeader: Constants.aToken,
+      },
+    );
     var datagrupo = json.decode(response.body.toString());
     print(datagrupo["data"]);
     return datagrupo["data"];
-
-    //print(widget.idUsuario);
-
-    //var datagrupo = response.body;
-    //sharedPreferences.setString("grupo", datagrupo);
   }
 
   @override
@@ -77,12 +79,7 @@ class _GrupoState extends State<Grupo> {
                   end: Alignment.bottomLeft,
                   colors: [
                     Color(0xFF3C57F0),
-                    //Colors.blue.shade400,
-                    //Colors.lightBlue[100],
                     Color(0xFF3700FF),
-
-                    //Color(0xFF0022FF),
-                    //Color(0xFF0A23C9),
                   ],
                 ),
                 borderRadius: BorderRadius.only(
@@ -90,12 +87,7 @@ class _GrupoState extends State<Grupo> {
                   bottomRight: Radius.circular(20),
                 ),
               ),
-              //width: MediaQuery.of(context).size.width,
-
-              //height: screenHeight * 0.38,
-              //
               height: 300.0,
-              //height: scrHeight * 0.38,
               width: double.infinity,
             ),
           ),
@@ -117,13 +109,6 @@ class _GrupoState extends State<Grupo> {
                       color: Colors.white,
                       fontSize: 45.0,
                       fontWeight: FontWeight.w800,
-                      /*shadows: [
-                                  Shadow(
-                                    blurRadius: 3.0,
-                                    color: Colors.blue[50],
-                                    offset: Offset(1.0, 0.5),
-                                  ),
-                                ],*/
                     ),
                   ),
                 ),
@@ -140,13 +125,6 @@ class _GrupoState extends State<Grupo> {
                           color: Colors.white,
                           fontSize: 22.0,
                           fontWeight: FontWeight.w200,
-                          /*shadows: [
-                                  Shadow(
-                                    blurRadius: 3.0,
-                                    color: Colors.blue[50],
-                                    offset: Offset(1.0, 0.5),
-                                  ),
-                                ],*/
                         ),
                       ),
                     ),
@@ -184,8 +162,6 @@ class _GrupoState extends State<Grupo> {
           Positioned(
             bottom: 0,
             child: Container(
-              //color: Colors.green,
-              //color: Colors.indigoAccent[400],
               height: MediaQuery.of(context).size.height * 1.878,
               margin: EdgeInsets.only(left: 10),
               child: Row(
@@ -223,12 +199,7 @@ class _GrupoState extends State<Grupo> {
             margin: EdgeInsets.only(top: scrHeight * 0.24),
             child: Material(
               color: Colors.grey[100],
-              borderRadius: BorderRadius.only(
-                  //bottomLeft: Radius.circular(100.0),
-
-                  //Al
-                  //topRight: Radius.circular(100.0),
-                  ),
+              borderRadius: BorderRadius.only(),
               child: Stack(children: <Widget>[
                 SingleChildScrollView(
                   child: Column(
@@ -367,9 +338,6 @@ class OuterClippedPart extends CustomClipper<Path> {
     path.lineTo(size.width, size.height * 0.1);
     path.quadraticBezierTo(
         size.width * 0.9, size.height * 0.02, size.width * .6, 0);
-    /*path.cubicTo(size.width * 0.55, size.height * 0.16, size.width * 0.85,
-        size.height * 0.05, size.width / 2, 0);
-    */
     return path;
   }
 
@@ -388,9 +356,6 @@ class OuterClippedPart2 extends CustomClipper<Path> {
     path.lineTo(size.width, size.height * 0.2);
     path.quadraticBezierTo(
         size.width * 0.9, size.height * 0.03, size.width * .4, 0);
-    /*path.cubicTo(size.width * 0.55, size.height * 0.16, size.width * 0.85,
-        size.height * 0.05, size.width / 2, 0);
-    */
     return path;
   }
 

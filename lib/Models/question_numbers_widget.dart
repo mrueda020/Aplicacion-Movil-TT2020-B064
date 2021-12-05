@@ -1,15 +1,15 @@
+import 'pregunta.dart';
 import 'package:flutter/material.dart';
-import 'question.dart';
 
 class QuestionNumbersWidget extends StatelessWidget {
-  final List<Question> questions;
-  final Question question;
+  final List<Pregunta> preguntas;
+  final Pregunta pregunta;
   final ValueChanged<int> onClickedNumber;
 
   const QuestionNumbersWidget({
     Key key,
-    @required this.questions,
-    @required this.question,
+    @required this.preguntas,
+    @required this.pregunta,
     @required this.onClickedNumber,
   }) : super(key: key);
 
@@ -24,9 +24,9 @@ class QuestionNumbersWidget extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: padding),
         scrollDirection: Axis.horizontal,
         separatorBuilder: (context, index) => Container(width: padding),
-        itemCount: questions.length,
+        itemCount: preguntas.length,
         itemBuilder: (context, index) {
-          final isSelected = question == questions[index];
+          final isSelected = pregunta == preguntas[index];
 
           return buildNumber(
             index: index,

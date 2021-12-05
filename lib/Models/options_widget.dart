@@ -1,16 +1,15 @@
+import 'respuesta.dart';
+import 'pregunta.dart';
 import 'package:flutter/material.dart';
-import 'option.dart';
-import 'question.dart';
 import 'package:linkex/models/utils.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class OptionsWidget extends StatelessWidget {
-  final Question question;
-  final ValueChanged<Option> onClickedOption;
+  final Pregunta pregunta;
+  final ValueChanged<Respuesta> onClickedOption;
 
   const OptionsWidget({
     Key key,
-    @required this.question,
+    @required this.pregunta,
     @required this.onClickedOption,
   }) : super(key: key);
 
@@ -18,32 +17,18 @@ class OptionsWidget extends StatelessWidget {
   Widget build(BuildContext context) => ListView(
         physics: BouncingScrollPhysics(),
         children: Utils.heightBetween(
-          question.options
+          pregunta.opciones
               .map((option) => buildOption(context, option))
               .toList(),
           height: 8,
         ),
       );
 
-  Widget buildOption(BuildContext context, Option option) {
-    final color = getColorForOption(option, question);
+  Widget buildOption(BuildContext context, Respuesta option) {
+    final color = getColorForOption(option, pregunta);
 
     return GestureDetector(
       onTap: () => onClickedOption(option),
-
-      /*child: Container(
-        padding: EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          children: [
-            buildAnswer(option),
-            buildSolution(question.selectedOption, option),
-          ],
-        ),
-      ),*/
       child: Container(
         padding: EdgeInsets.all(12),
         child: Card(
@@ -55,7 +40,7 @@ class OptionsWidget extends StatelessWidget {
           child: Column(
             children: [
               buildAnswer(option),
-              buildSolution(question.selectedOption, option),
+              buildSolution(pregunta.opcionSeleccionada, option),
             ],
           ),
         ),
@@ -63,7 +48,7 @@ class OptionsWidget extends StatelessWidget {
     );
   }
 
-  Widget buildAnswer(Option option) => Container(
+  Widget buildAnswer(Respuesta option) => Container(
         margin: EdgeInsets.only(top: 0, left: 15),
         height: 50,
         child: Row(children: [
@@ -75,7 +60,7 @@ class OptionsWidget extends StatelessWidget {
             width: 15.0,
           ),
           Text(
-            option.text,
+            option.texto,
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.normal,
@@ -92,27 +77,27 @@ class OptionsWidget extends StatelessWidget {
         ]),
       );
 
-  Widget buildSolution(Option solution, Option answer) {
+  Widget buildSolution(Respuesta solution, Respuesta answer) {
     if (solution == answer) {
-      question.solution = true;
+      pregunta.esCorrecto = true;
       return Text(
         "",
         //question.solution,
         style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
       );
     } else {
-      question.solution = false;
+      pregunta.esCorrecto = false;
       return Container();
     }
   }
 
-  Color getColorForOption(Option option, Question question) {
-    final isSelected = option == question.selectedOption;
+  Color getColorForOption(Respuesta option, Pregunta pregunta) {
+    final isSelected = option == pregunta.opcionSeleccionada;
 
     if (!isSelected) {
       return Colors.indigoAccent;
     } else {
-      return option.isCorrect ? Colors.lightBlue[200] : Colors.lightBlue[400];
+      return option.esCorrecto ? Colors.lightBlue[200] : Colors.lightBlue[400];
     }
   }
 }

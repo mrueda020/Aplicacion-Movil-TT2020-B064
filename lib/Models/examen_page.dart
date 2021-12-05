@@ -1,26 +1,24 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:linkex/Screens/aplicarExamen.dart';
-import 'package:linkex/Screens/menuResultados.dart';
-import 'category.dart';
-import 'option.dart';
-import 'question.dart';
-import 'question_numbers_widget.dart';
+import 'respuesta.dart';
+import 'examen.dart';
+import 'pregunta.dart';
 import 'questions_widget.dart';
+import 'question_numbers_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:linkex/Screens/menu_resultados.dart';
 
-class CategoryPage extends StatefulWidget {
-  final Category category;
+class ExamenPage extends StatefulWidget {
+  final Examen examen;
   final String infoExamen;
 
-  CategoryPage({Key key, this.category, this.infoExamen}) : super(key: key);
+  ExamenPage({Key key, this.examen, this.infoExamen}) : super(key: key);
 
   @override
-  _CategoryPageState createState() => _CategoryPageState();
+  _ExamenPageState createState() => _ExamenPageState();
 }
 
-class _CategoryPageState extends State<CategoryPage> {
+class _ExamenPageState extends State<ExamenPage> {
   PageController controller;
-  Question question;
+  Pregunta pregunta;
   int id = 0;
   int numPreguntas = 0;
   int numSeleccionado = 0;
@@ -35,8 +33,8 @@ class _CategoryPageState extends State<CategoryPage> {
     super.initState();
 
     controller = PageController();
-    question = widget.category.questions.first;
-    numPreguntas = widget.category.questions.length;
+    pregunta = widget.examen.preguntas_Examen.first;
+    numPreguntas = widget.examen.preguntas_Examen.length;
   }
 
   void consultarPreguntas() {
@@ -46,7 +44,6 @@ class _CategoryPageState extends State<CategoryPage> {
         numSeleccionado++;
       }
     }
-
     texto =
         'Esta seguro que desea terminar el examen? \n\nActualmente lleva contestado: \n' +
             numSeleccionado.toString() +
@@ -61,7 +58,6 @@ class _CategoryPageState extends State<CategoryPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            // backgroundColor: Color(0x00ffffff),
             title: Text(
               texto,
               style: TextStyle(
@@ -80,18 +76,12 @@ class _CategoryPageState extends State<CategoryPage> {
             actions: [
               FlatButton(
                   onPressed: () {
-                    /* if (numSeleccionado < numPreguntas) {
-                      Navigator.of(context).pop(false);
-                      _onBackPressed();
-                    } else {*/
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (BuildContext context) => MenuResultadoPage(
                             numPreguntas,
                             preguntas,
                             widget.infoExamen,
                             idRespuesta)));
-                    // }
-                    // SystemNavigator.pop();
                   },
                   child: Text(
                     'Terminar',
@@ -138,20 +128,11 @@ class _CategoryPageState extends State<CategoryPage> {
       child: Scaffold(
           appBar: buildAppBar(context),
           body: QuestionsWidget(
-            category: widget.category,
+            examen: widget.examen,
             controller: controller,
-            onChangedPage: (index) => nextQuestion(index: index),
+            onChangedPage: (index) => siguientePregunta(index: index),
             onClickedOption: selectOption,
           ),
-          /*floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            //question.isLocked = true;
-            nextQuestion(index: temp + 1, jump: true);
-          },
-          backgroundColor: Colors.indigoAccent,
-          icon: Icon(Icons.skip_next),
-          label: Text("Siguiente"),
-        ),*/
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
           floatingActionButton: Padding(
@@ -163,24 +144,24 @@ class _CategoryPageState extends State<CategoryPage> {
                   onPressed: () {
                     print(id);
 
-                    if (id != 0) nextQuestion(index: id - 1, jump: true);
+                    if (id != 0) siguientePregunta(index: id - 1, jump: true);
                   },
                   icon: Icon(Icons.navigate_before),
                   label: Text(""),
                 ),
                 FloatingActionButton.extended(
                   onPressed: () {
-                    //print(temp);
-                    print(widget.category.questions.length);
+                    print(widget.examen.preguntas_Examen.length);
 
-                    if (id < widget.category.questions.length - 1) {
-                      nextQuestion(index: id + 1, jump: true);
-                    } else if (id == widget.category.questions.length - 1) {
+                    if (id < widget.examen.preguntas_Examen.length - 1) {
+                      siguientePregunta(index: id + 1, jump: true);
+                    } else if (id ==
+                        widget.examen.preguntas_Examen.length - 1) {
                       print("final");
                       _onBackPressed();
                     }
                   },
-                  label: Text(id == widget.category.questions.length - 1
+                  label: Text(id == widget.examen.preguntas_Examen.length - 1
                       ? "Terminar"
                       : ""),
                   icon: Icon(Icons.navigate_next),
@@ -190,11 +171,10 @@ class _CategoryPageState extends State<CategoryPage> {
           )));
 
   Widget buildAppBar(context) => AppBar(
-        title: Text(widget.category.categoryName),
+        title: Text(widget.examen.titulo),
         leading: GestureDetector(
-          onTap: () {/* Write listener code here */},
-          child: Icon(Icons.schedule_send // add custom icons also
-              ),
+          onTap: () {},
+          child: Icon(Icons.schedule_send),
         ),
         actions: <Widget>[
           Column(
@@ -224,12 +204,7 @@ class _CategoryPageState extends State<CategoryPage> {
               end: Alignment.bottomLeft,
               colors: [
                 Color(0xFF3C57F0),
-                //Colors.blue.shade400,
-                //Colors.lightBlue[100],
                 Color(0xFF3700FF),
-
-                //Color(0xFF0022FF),
-                //Color(0xFF0A23C9),
               ],
             ),
           ),
@@ -239,48 +214,38 @@ class _CategoryPageState extends State<CategoryPage> {
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 16),
             child: QuestionNumbersWidget(
-              questions: widget.category.questions,
-              question: question,
+              preguntas: widget.examen.preguntas_Examen,
+              pregunta: pregunta,
               onClickedNumber: (index) =>
-                  nextQuestion(index: index, jump: true),
+                  siguientePregunta(index: index, jump: true),
             ),
           ),
         ),
       );
 
-  void selectOption(Option option) {
-    if (question.isLocked) {
+  void selectOption(Respuesta option) {
+    if (pregunta.bloqueado) {
       return;
     } else {
       print(id);
       setState(() {
-        //question.isLocked = true;
-
-        question.selectedOption = option;
-        preguntas[id] = option.isCorrect.toString();
-        idRespuesta[id] = option.code;
+        pregunta.opcionSeleccionada = option;
+        preguntas[id] = option.esCorrecto.toString();
+        idRespuesta[id] = option.idRespuesta;
         print(preguntas[id]);
         print(idRespuesta[id]);
-        /*QuestionNumbersWidget(
-          questions: widget.category.questions,
-          question: question,
-          onClickedNumber: (index) =>
-              nextQuestion(index: temp + 1, jump: false),
-        );*/
-
-        // nextQuestion(index: temp + 1, jump: true);
       });
     }
   }
 
-  void nextQuestion({int index, bool jump = false}) {
+  void siguientePregunta({int index, bool jump = false}) {
     id = index;
 
     final nextPage = controller.page + 1;
     final indexPage = index ?? nextPage.toInt();
 
     setState(() {
-      question = widget.category.questions[indexPage];
+      pregunta = widget.examen.preguntas_Examen[indexPage];
     });
 
     if (jump) {

@@ -1,16 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:octo_image/octo_image.dart';
-import 'package:linkex/Models/CustomInputBox.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_settings_screens/flutter_settings_screens.dart';
-import 'package:linkex/data/constants.dart' as Constants;
-import 'package:http/http.dart' as http;
-
+import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
+import 'package:linkex/Models/CustomInputBox.dart';
+import 'package:linkex/data/constants.dart' as Constants;
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EditarPerfil extends StatefulWidget {
   final String idUsuario;
@@ -29,6 +26,12 @@ class _EditarPerfilState extends State<EditarPerfil> {
   bool cambiarPassword = false;
   var _formKey = GlobalKey<FormState>();
   bool _obscureText = true;
+  Map<String, String> headers = {
+    'content-type': 'application/json',
+    'accept': 'application/json',
+    'authorization': Constants.aToken
+  };
+
   void _toggle() {
     setState(() {
       _obscureText = !_obscureText;
@@ -100,13 +103,14 @@ class _EditarPerfilState extends State<EditarPerfil> {
     var url = Uri.parse(Constants.url.toString() +
         'actualizar-info/' +
         widget.idUsuario.toString());
-    final response = await http.post(url, body: {
+    final bodyMsg = jsonEncode({
       "email": emailCont.text,
       "password": newPassCont.text,
       "confirmPassword": oldPassCont.text,
       "name": "",
       "surname": "",
     });
+    final response = await http.post(url, headers: headers, body: bodyMsg);
     var dataresultados = json.decode(response.body.toString());
     print(response.body);
     if (response.body[2] == "e")
@@ -120,13 +124,15 @@ class _EditarPerfilState extends State<EditarPerfil> {
     var url = Uri.parse(Constants.url.toString() +
         'actualizar-info/' +
         widget.idUsuario.toString());
-    final response = await http.post(url, body: {
+
+    final bodyMsg = jsonEncode({
       "email": emailCont.text,
       "password": "",
       "confirmPassword": "",
       "name": "",
       "surname": "",
     });
+    final response = await http.post(url, headers: headers, body: bodyMsg);
     var dataresultados = json.decode(response.body.toString());
     print(response.body);
     if (response.body[2] == "e")
@@ -218,15 +224,6 @@ class _EditarPerfilState extends State<EditarPerfil> {
             ],
           ),
         ],
-        /*actions: [
-          IconButton(
-            icon: Icon(
-              Icons.settings,
-              color: Colors.blueAccent,
-            ),
-            onPressed: () {},
-          ),
-        ],*/
       ),
       body: Container(
         padding: EdgeInsets.only(left: 16, top: 0, right: 16),

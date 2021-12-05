@@ -1,17 +1,11 @@
+import 'dart:io';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:linkex/Models/category_detail_widget.dart';
-import 'package:linkex/Models/category_page.dart';
-import 'package:linkex/Models/question.dart';
-import 'package:linkex/Models/utils.dart';
-import 'package:linkex/data/categories.dart';
-import 'package:linkex/models/question.dart';
-import 'package:linkex/data/constants.dart' as Constants;
-import 'package:http/http.dart' as http;
-
 import 'historial.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
+import 'package:linkex/data/constants.dart' as Constants;
 
 class MenuResultadoPage extends StatefulWidget {
   final int preguntas;
@@ -33,6 +27,11 @@ class _MenuResultadoPageState extends State<MenuResultadoPage> {
   List array = List();
   var info;
   String infoid = "";
+  Map<String, String> headers = {
+    'content-type': 'application/json',
+    'accept': 'application/json',
+    'authorization': Constants.aToken
+  };
 
   @override
   void initState() {
@@ -45,7 +44,7 @@ class _MenuResultadoPageState extends State<MenuResultadoPage> {
     info = jsonDecode(widget.infoExamen);
     infoid = info["idEvaluado"].toString();
     print(correcto.toString());
-    final response = await http.post(url, body: {
+    final bodyMsg = jsonEncode({
       "fechaFin": info["fechaFin"],
       "fechaInicio": info["fechaInicio"],
       "fechaRealizacion": info["fechaRealizacion"],
@@ -54,8 +53,9 @@ class _MenuResultadoPageState extends State<MenuResultadoPage> {
       "idExamen": info["idExamen"],
       "idGrupo": info["idGrupo"],
       "tipoExamen": info["tipoExamen"],
-      "calificacion": resultado.toString(),
+      "calificacion": resultado.toString()
     });
+    final response = await http.post(url, headers: headers, body: bodyMsg);
     print(response.body);
   }
 

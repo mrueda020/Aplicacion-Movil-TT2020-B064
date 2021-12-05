@@ -1,36 +1,20 @@
+import 'examen.dart';
 import 'package:flutter/material.dart';
-import 'category.dart';
 
-class CategoryDetailWidget extends StatelessWidget {
-  final Category category;
-  final ValueChanged<Category> onSelectedCategory;
+class ExamenDetailWidget extends StatelessWidget {
+  final Examen examen;
+  final ValueChanged<Examen> examenSeleccionado;
 
-  const CategoryDetailWidget({
+  const ExamenDetailWidget({
     Key key,
-    @required this.category,
-    @required this.onSelectedCategory,
+    @required this.examen,
+    @required this.examenSeleccionado,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: () => onSelectedCategory(category),
-        child:
-            /*Container(
-          padding: EdgeInsets.only(right: 10),
-          width: MediaQuery.of(context).size.width * 0.65,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              //buildImage(),
-              SizedBox(height: 12),
-              Text(
-                category.categoryName,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-            ],
-          ),
-        ),*/
-            Container(
+        onTap: () => examenSeleccionado(examen),
+        child: Container(
           margin: EdgeInsets.only(right: 15),
           padding: EdgeInsets.all(12),
           height: 140,
@@ -70,7 +54,7 @@ class CategoryDetailWidget extends StatelessWidget {
               Container(
                 width: 100,
                 child: Text(
-                  category.categoryName,
+                  examen.titulo,
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ),

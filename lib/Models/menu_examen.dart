@@ -1,16 +1,14 @@
+import 'dart:io';
+import 'respuesta.dart';
 import 'dart:convert';
+import 'examen.dart';
+import 'pregunta.dart';
+import 'examen_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'category.dart';
-import 'option.dart';
-import 'question.dart';
 import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jwt_decode/jwt_decode.dart';
 import 'package:linkex/data/constants.dart' as Constants;
-
-import 'category_page.dart';
 
 class MenuExamenesPage extends StatefulWidget {
   String idGrupo;
@@ -34,9 +32,9 @@ class _MenuExamenesPageState extends State<MenuExamenesPage> {
   List listaEx = List();
   List items = List();
 
-  List<List<Option>> options2 = List();
+  List<List<Respuesta>> options2 = List();
 
-  List<Question> questions1 = [];
+  List<Pregunta> questions1 = [];
 
   Future<List> getData() async {
     var url = Uri.parse(Constants.url.toString() +
@@ -44,15 +42,16 @@ class _MenuExamenesPageState extends State<MenuExamenesPage> {
         widget.idUsuario.toString() +
         '/' +
         widget.idGrupo.toString());
-    final response = await http.get(url);
-    //print(response.body);
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        HttpHeaders.authorizationHeader: Constants.aToken,
+      },
+    );
     var datagrupo = json.decode(response.body.toString());
 
     print(datagrupo["data"]);
-    //print(widget.idUsuario);
-
-    //var datagrupo = response.body;
-    //sharedPreferences.setString("grupo", datagrupo);
     return datagrupo["data"];
   }
 
@@ -60,7 +59,7 @@ class _MenuExamenesPageState extends State<MenuExamenesPage> {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  Future<bool> _onBackPressed(String idExamen, String nombreExamen) {
+  Future<bool> _onBackPressed(String idExamen, String nombreExamen, int id) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -84,7 +83,7 @@ class _MenuExamenesPageState extends State<MenuExamenesPage> {
             actions: [
               FlatButton(
                   onPressed: () {
-                    getExamen(idExamen, nombreExamen);
+                    getExamen(idExamen, nombreExamen, id);
 
                     // SystemNavigator.pop();
                   },
@@ -105,6 +104,53 @@ class _MenuExamenesPageState extends State<MenuExamenesPage> {
                   )),
               FlatButton(
                   onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  child: Text(
+                    'Regresar',
+                    style: TextStyle(
+                      color: Colors.indigoAccent,
+                      fontSize: 23.0,
+                      fontWeight: FontWeight.w800,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 5.0,
+                          color: Colors.indigo[50],
+                          offset: Offset(5.0, 5.0),
+                        ),
+                      ],
+                    ),
+                  )),
+            ],
+          );
+        });
+  }
+
+  Future<bool> _error() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // backgroundColor: Color(0x00ffffff),
+            title: Text(
+              'El examen ya fue contestado.\nNo puede resolverse nuevamente.',
+              style: TextStyle(
+                color: Colors.grey[900],
+                fontSize: 24.0,
+                fontWeight: FontWeight.w800,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5.0,
+                    color: Colors.indigo[50],
+                    offset: Offset(5.0, 5.0),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
                     Navigator.of(context).pop(false);
                   },
                   child: Text(
@@ -157,9 +203,10 @@ class _MenuExamenesPageState extends State<MenuExamenesPage> {
     reset();
   }
 
-  String extraerValor(List lista, int id, int id2) {
+  String extraerValor(List lista, int id, int id2, int id3) {
     String valor = "";
     List listaSplit1 = lista[id].split(':');
+    print(listaSplit1);
     valor = listaSplit1[id2];
     return valor;
   }
@@ -176,13 +223,12 @@ class _MenuExamenesPageState extends State<MenuExamenesPage> {
     }
   }
 
-  String obtenerInfoExamen(String idExamen) {
+  String obtenerInfoExamen(String idExamen, int id) {
     var now = DateTime.now();
+    print(id);
 
-    var fechaFin =
-        listaExamenes[int.parse(idExamen) - 1]["Exa_fecha_aplicacion_fin"];
-    var fechaInicio =
-        listaExamenes[int.parse(idExamen) - 1]["Exa_fecha_aplicacion_inicio"];
+    var fechaFin = listaExamenes[id]["Exa_fecha_aplicacion_fin"];
+    var fechaInicio = listaExamenes[id]["Exa_fecha_aplicacion_inicio"];
     var fechaRealizacion = now.year.toString() +
         "-" +
         now.month.toString() +
@@ -194,11 +240,8 @@ class _MenuExamenesPageState extends State<MenuExamenesPage> {
         now.minute.toString() +
         ":" +
         now.second.toString();
-    var idEvaluador = listaExamenes[int.parse(idExamen) - 1]
-            ["Evaluador_Evaluador_id"]
-        .toString();
-    var tipoExamen =
-        listaExamenes[int.parse(idExamen) - 1]["Exa_tipo_de_examen"].toString();
+    var idEvaluador = listaExamenes[id]["Evaluador_Evaluador_id"].toString();
+    var tipoExamen = listaExamenes[id]["Exa_tipo_de_examen"].toString();
 
     String infoExamen = '{"fechaFin": "' +
         fechaFin +
@@ -221,117 +264,98 @@ class _MenuExamenesPageState extends State<MenuExamenesPage> {
     return infoExamen;
   }
 
-  /*Future<List> getExamen(String idExamen, String nombreExamen) async {
+  Future<List> getExamen(String idExamen, String nombreExamen, int id) async {
     var url = Uri.parse(Constants.url.toString() +
         'cargar-examen/' +
         widget.idUsuario.toString() +
         '/' +
-        idExamen);
-    final response = await http.get(url);
-    var dataexamen = json.decode(response.body.toString());
-    var datauser = response.body;
-    _prefs.setString(nombreExamen, datauser);
-    return dataexamen["data"];
-  }*/
-
-  Future<List> getExamen(String idExamen, String nombreExamen) async {
-    var url = Uri.parse(Constants.url.toString() +
-        'cargar-examen/' +
-        widget.idUsuario.toString() +
+        idExamen +
         '/' +
-        idExamen);
-    final response = await http.get(url);
+        widget.idGrupo);
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        HttpHeaders.authorizationHeader: Constants.aToken,
+      },
+    );
 
     var dataexamen = json.decode(response.body.toString());
     var datauser = response.body;
-    print(datauser);
-    print("idExamen");
-    print(idExamen);
 
-    String infoExamen = obtenerInfoExamen(idExamen);
+    if (dataexamen["data"] != "El examen ya fue contestado") {
+      print(datauser);
+      print("idExamen");
+      print(idExamen);
 
-    _prefs.setString("tokenex", datauser);
+      String infoExamen = obtenerInfoExamen(idExamen, id);
 
-    listaEx = await dataexamen["data"];
-    listaPreguntas.clear();
-    listaPregunta.clear();
-    listaRespuestas.clear();
-    listaPreguntas.addAll(listaEx);
-    //options1.clear();
-    questions1.clear();
+      _prefs.setString("tokenex", datauser);
 
-    print(listaPreguntas);
-    for (int i = 0; i < listaPreguntas.length; i++) {
-      List<Option> options1 = List();
-      //options1.clear();
-      listaRespuestas.clear();
-      listaPregunta.add(listaPreguntas[i]["pregunta"][0]);
-
-      print("A");
-      String text = listaPregunta[i].toString();
-      //print(text);
-      List result = text.split(',');
-      //print(result[1]);
-      List result2 = result[1].split('{');
-      //print(result2[0]);
-      List result3 = result2[0].split(':');
-      print(result3[1].trim());
-
-      String text2 = listaPreguntas[i]["respuestas"].toString();
-      //print(text2);
-      List resps = text2.split('}');
-      //print(resps[0]);
-      //List resps2 = resps[0].split(',');
-      listaRespuestas.clear();
-      //print(resps.length);
-      for (int j = 0; j < resps.length - 1; j++) {
-        List resps2 = resps[j].split(',');
-        for (int k = 0; k < resps2.length; k++) {
-          if (j != 0 && k != 0)
-            listaRespuestas.add(extraerValor(resps2, k, 1).trim());
-          else if (j == 0)
-            listaRespuestas.add(extraerValor(resps2, k, 1).trim());
-        }
-        print(listaRespuestas);
-        options1.add(Option(
-            text: listaRespuestas[1],
-            code: listaRespuestas[0].toString(),
-            isCorrect: listaRespuestas[2].toString() == "1" ? true : false));
-        listaRespuestas.clear();
-
-        print("Lista opciones");
-      }
-      options2.add(options1);
-      print(options2[i]);
-      questions1.add(Question(text: result3[1].trim(), options: options2[i]));
-    }
-
-    Category nuevoExamen =
-        new Category(categoryName: nombreExamen, questions: questions1);
-
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) =>
-          CategoryPage(category: nuevoExamen, infoExamen: infoExamen),
-    ));
-  }
-
-  void verificarExamen(String idExamen, String nombreExamen) async {
-    if (existeExamen[int.parse(idExamen)].toString() != "false") {
-      print("Si hay");
-      print(existeExamen[int.parse(idExamen)]);
-      reset();
-    } else {
-      print("No hay");
-
-      Future<List> _futureList = getExamen(
-        idExamen,
-        nombreExamen,
-      );
-      listaEx = await _futureList;
+      listaEx = await dataexamen["data"];
+      listaPreguntas.clear();
       listaPregunta.clear();
-      listaPregunta.addAll(listaEx);
-      verificar();
-      reset();
+      listaRespuestas.clear();
+      listaPreguntas.addAll(listaEx);
+      //options1.clear();
+      questions1.clear();
+
+      print(listaPreguntas);
+      for (int i = 0; i < listaPreguntas.length; i++) {
+        List<Respuesta> options1 = List();
+        //options1.clear();
+        listaRespuestas.clear();
+        listaPregunta.add(listaPreguntas[i]["pregunta"][0]);
+
+        print("A");
+        String text = listaPregunta[i].toString();
+        //print(text);
+        List result = text.split(',');
+        //print(result[1]);
+        List result2 = result[1].split('{');
+        //print(result2[0]);
+        List result3 = result2[0].split(':');
+        print(result3[1].trim());
+
+        String text2 = listaPreguntas[i]["respuestas"].toString();
+        //print(text2);
+        List resps = text2.split('}');
+        //print(resps[0]);
+        //List resps2 = resps[0].split(',');
+        listaRespuestas.clear();
+        //print(resps.length);
+        for (int j = 0; j < resps.length - 1; j++) {
+          List resps2 = resps[j].split(',');
+          for (int k = 0; k < resps2.length; k++) {
+            if (j != 0 && k != 0)
+              listaRespuestas.add(extraerValor(resps2, k, 1, id).trim());
+            else if (j == 0)
+              listaRespuestas.add(extraerValor(resps2, k, 1, id).trim());
+          }
+          print(listaRespuestas);
+          options1.add(Respuesta(
+              texto: listaRespuestas[1],
+              idRespuesta: listaRespuestas[0].toString(),
+              esCorrecto: listaRespuestas[2].toString() == "1" ? true : false));
+          listaRespuestas.clear();
+
+          print("Lista opciones");
+        }
+        options2.add(options1);
+        print(options2[i]);
+        questions1
+            .add(Pregunta(texto: result3[1].trim(), opciones: options2[i]));
+      }
+
+      Examen nuevoExamen =
+          new Examen(titulo: nombreExamen, preguntas_Examen: questions1);
+
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) =>
+            ExamenPage(examen: nuevoExamen, infoExamen: infoExamen),
+      ));
+    } else {
+      _error();
     }
   }
 
@@ -506,8 +530,8 @@ class _MenuExamenesPageState extends State<MenuExamenesPage> {
                               child: GestureDetector(
                                   onTap: () async => _onBackPressed(
                                       listaExamenes[i]["Exa_id"].toString(),
-                                      listaExamenes[i]["Exa_nombre"]
-                                          .toString()),
+                                      listaExamenes[i]["Exa_nombre"].toString(),
+                                      i),
                                   child: Column(
                                     children: [
                                       buildClassItem(

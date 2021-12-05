@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:linkex/dashboard.dart';
-import 'package:linkex/menuLateral.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:async';
-import 'dart:convert';
-import 'package:jwt_decode/jwt_decode.dart';
+import 'package:linkex/menu_lateral.dart';
 
 class Inicio extends StatefulWidget {
   final String idUsuario;
+  final String nombreUsuario;
 
-  Inicio({this.idUsuario});
+  Inicio({this.idUsuario, this.nombreUsuario});
   @override
   _InicioState2 createState() => new _InicioState2();
 }
@@ -22,6 +19,7 @@ class _InicioState2 extends State<Inicio> {
         children: [
           MenuLateral(
             idUsuario: widget.idUsuario,
+            nombreUsuario: widget.nombreUsuario,
           ),
           Dashboard(
             idUsuario: widget.idUsuario,
